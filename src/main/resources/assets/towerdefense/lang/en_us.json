@@ -1,0 +1,13 @@
+{
+  "entity.towerdefense.archer_tower": "Archer Tower",
+  "entity.towerdefense.zombie_enemy": "Zombie Enemy",
+  "item.towerdefense.archer_tower_spawner": "Archer Tower Spawner",
+  "gui.towerdefense.tower_menu": "Tower Menu",
+  "gui.towerdefense.upgrade": "Upgrade",
+  "gui.towerdefense.sell": "Sell",
+  "gui.towerdefense.move": "Move",
+  "gui.towerdefense.stats": "Stats",
+  "gui.towerdefense.abilities": "Abilities",
+  "ability.towerdefense.multi_shot": "Multi-Shot",
+  "ability.towerdefense.multi_shot.desc": "Fire multiple arrows at nearby enemies"
+}
