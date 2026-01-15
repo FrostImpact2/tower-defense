@@ -1,35 +1,91 @@
 package com.towerdefense.renderer;
 
+import com.towerdefense.client.animation.BowAnimation;
+import com.towerdefense.client.animation.TowerAnimation;
 import com.towerdefense.entity.tower.BaseTowerEntity;
-import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.ArmorStandModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.entity.layers.CustomHeadLayer;
+import net.minecraft.client.renderer.entity.layers.ElytraLayer;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
+import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * Renderer for tower entities
- * Uses a humanoid model so towers can display armor and held items
+ * Renderer for tower entities using armor stand model
+ * Renders towers as small armor stands with arms visible and animation support
  */
-public class TowerRenderer extends MobRenderer<BaseTowerEntity, HumanoidModel<BaseTowerEntity>> {
+public class TowerRenderer extends MobRenderer<BaseTowerEntity, ArmorStandModel> {
 
-    private static final ResourceLocation TEXTURE = ResourceLocation.withDefaultNamespace("textures/entity/zombie/zombie.png");
+    private static final ResourceLocation DEFAULT_TEXTURE = ResourceLocation.withDefaultNamespace("textures/entity/armorstand/wood.png");
 
     public TowerRenderer(EntityRendererProvider.Context context) {
-        super(context, new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER)), 0.5F);
+        super(context, new ArmorStandModel(context.bakeLayer(ModelLayers.ARMOR_STAND)), 0.0F);
 
         // Add armor layer so towers can display their armor
         this.addLayer(new HumanoidArmorLayer<>(
                 this,
-                new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_INNER_ARMOR)),
-                new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR)),
+                new ArmorStandModel(context.bakeLayer(ModelLayers.ARMOR_STAND_INNER_ARMOR)),
+                new ArmorStandModel(context.bakeLayer(ModelLayers.ARMOR_STAND_OUTER_ARMOR)),
                 context.getModelManager()
         ));
+
+        // Add item in hand layer for weapons/tools
+        this.addLayer(new ItemInHandLayer<>(this, context.getItemInHandRenderer()));
+
+        // Add custom head layer for player heads/skulls
+        this.addLayer(new CustomHeadLayer<>(this, context.getModelSet(), context.getItemInHandRenderer()));
+
+        // Add elytra layer for wings
+        this.addLayer(new ElytraLayer<>(this, context.getModelSet()));
     }
 
     @Override
     public ResourceLocation getTextureLocation(BaseTowerEntity entity) {
-        return TEXTURE;
+        return DEFAULT_TEXTURE;
+    }
+
+    @Override
+    protected boolean shouldShowName(BaseTowerEntity entity) {
+        // Don't show name tag, we'll use custom health bar rendering instead
+        return false;
+    }
+
+    /**
+     * Setup animations for the tower model
+     */
+    @Override
+    protected void setupRotations(BaseTowerEntity entity, com.mojang.blaze3d.vertex.PoseStack poseStack, float ageInTicks, float rotationYaw, float partialTicks) {
+        super.setupRotations(entity, poseStack, ageInTicks, rotationYaw, partialTicks);
+
+        // Scale down for small armor stand appearance
+        poseStack.scale(0.9F, 0.9F, 0.9F);
+    }
+
+    /**
+     * Apply animations to the model before rendering
+     */
+    public void applyAnimations(ArmorStandModel model, BaseTowerEntity entity, float ageInTicks) {
+        // Reset to default pose
+        TowerAnimation.resetPose(model);
+
+        // Get attack animation progress
+        float attackProgress = TowerAnimation.getAttackProgress(entity);
+
+        // Apply appropriate animation based on tower type
+        if (BowAnimation.shouldUseBowAnimation(entity)) {
+            // Bow-specific animation for archer towers
+            BowAnimation.applyBowAnimation(model, entity, attackProgress);
+        } else {
+            // Generic melee attack animation
+            TowerAnimation.applyAttackAnimation(model, entity, attackProgress);
+        }
+
+        // Apply idle animation when not attacking
+        if (attackProgress <= 0.0F) {
+            TowerAnimation.applyIdleAnimation(model, entity, ageInTicks);
+        }
     }
 }
