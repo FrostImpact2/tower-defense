@@ -4,7 +4,6 @@ import com.towerdefense.entity.tower.BaseTowerEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -15,7 +14,6 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -264,7 +262,11 @@ public abstract class BaseEnemyEntity extends PathfinderMob {
         // Save waypoints
         ListTag waypointList = new ListTag();
         for (BlockPos pos : pathWaypoints) {
-            waypointList.add(NbtUtils.writeBlockPos(pos));
+            CompoundTag posTag = new CompoundTag();
+            posTag.putInt("X", pos.getX());
+            posTag.putInt("Y", pos.getY());
+            posTag.putInt("Z", pos.getZ());
+            waypointList.add(posTag);
         }
         compound.put("PathWaypoints", waypointList);
     }
@@ -291,7 +293,11 @@ public abstract class BaseEnemyEntity extends PathfinderMob {
             pathWaypoints.clear();
             ListTag waypointList = compound.getList("PathWaypoints", 10);
             for (int i = 0; i < waypointList.size(); i++) {
-                NbtUtils.readBlockPos(waypointList.getCompound(i), "").ifPresent(pathWaypoints::add);
+                CompoundTag posTag = waypointList.getCompound(i);
+                int x = posTag.getInt("X");
+                int y = posTag.getInt("Y");
+                int z = posTag.getInt("Z");
+                pathWaypoints.add(new BlockPos(x, y, z));
             }
         }
     }

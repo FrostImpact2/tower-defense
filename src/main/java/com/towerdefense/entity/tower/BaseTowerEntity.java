@@ -15,6 +15,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -310,11 +311,13 @@ public abstract class BaseTowerEntity extends PathfinderMob {
      * @return true if the enemy was added, false if aggro limit reached
      */
     public boolean addAggroedEnemy(BaseEnemyEntity enemy) {
-        // Clean up dead enemies
-        aggroedEnemies.removeIf(uuid -> {
-            var entity = level().getPlayerByUUID(uuid);
-            return entity == null || !entity.isAlive();
-        });
+        // Clean up dead enemies periodically (only on server)
+        if (!level().isClientSide() && level() instanceof ServerLevel serverLevel) {
+            aggroedEnemies.removeIf(uuid -> {
+                Entity entity = serverLevel.getEntity(uuid);
+                return entity == null || !entity.isAlive();
+            });
+        }
         
         if (aggroedEnemies.size() >= stats.getAggroLimit()) {
             return false;
