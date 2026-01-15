@@ -32,6 +32,8 @@ import java.util.UUID;
 public class ArcherTowerEntity extends BaseTowerEntity {
 
     // Base64 encoded skull texture for archer tower head
+    // This is a custom player head texture showing an archer/ranger face
+    // Source: Minecraft player head texture from the texture database
     private static final String ARCHER_SKULL_TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzMxNmVhZmE1YTgzMWI2YTRiOWRlNDNiMDA2NDkwNDJmNGZhOGYwYWU2MjY1YWMyNTE1YWQxZGJkYzE1MTc1MyJ9fX0=";
 
     public ArcherTowerEntity(EntityType<? extends ArcherTowerEntity> entityType, Level level) {

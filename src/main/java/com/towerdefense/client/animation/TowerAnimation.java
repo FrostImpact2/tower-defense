@@ -10,6 +10,9 @@ import net.minecraft.util.Mth;
  */
 public class TowerAnimation {
 
+    // Duration of attack animation in ticks (20 ticks = 1 second)
+    private static final int ATTACK_ANIMATION_DURATION = 10;
+
     /**
      * Apply idle animation to the tower model
      */
@@ -69,7 +72,6 @@ public class TowerAnimation {
         int animTick = entity.getAttackAnimationTick();
         if (animTick <= 0) return 0.0F;
 
-        // Assuming 10 tick animation duration
-        return 1.0F - (animTick / 10.0F);
+        return 1.0F - ((float) animTick / ATTACK_ANIMATION_DURATION);
     }
 }

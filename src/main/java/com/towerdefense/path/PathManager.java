@@ -14,6 +14,9 @@ import java.util.Map;
 public class PathManager {
 
     private static final Map<String, PathData> PATHS = new HashMap<>();
+    
+    // Maximum iterations when searching for ground level (up or down)
+    private static final int MAX_GROUND_SEARCH_ITERATIONS = 10;
 
     static {
         // Register pre-built paths
@@ -124,7 +127,7 @@ public class PathManager {
         // Search downward for solid ground
         BlockPos.MutableBlockPos mutablePos = pos.mutable();
         
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < MAX_GROUND_SEARCH_ITERATIONS; i++) {
             if (level.getBlockState(mutablePos.below()).isSolid()) {
                 return mutablePos.immutable();
             }
@@ -133,7 +136,7 @@ public class PathManager {
 
         // If no ground found, search upward
         mutablePos.set(pos);
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < MAX_GROUND_SEARCH_ITERATIONS; i++) {
             if (level.getBlockState(mutablePos).isSolid()) {
                 return mutablePos.above().immutable();
             }

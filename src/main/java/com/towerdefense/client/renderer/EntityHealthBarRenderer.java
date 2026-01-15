@@ -34,6 +34,8 @@ public class EntityHealthBarRenderer {
     private static final float BAR_HEIGHT = 0.12F;
     private static final float BAR_Y_OFFSET = 0.5F;
     private static final float NAME_Y_OFFSET = 0.3F;
+    // Maximum render distance in blocks (chosen to balance visibility and performance)
+    // This matches typical tower detection range of 32 blocks
     private static final int MAX_RENDER_DISTANCE = 32;
 
     @SubscribeEvent

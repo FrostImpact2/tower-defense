@@ -82,8 +82,11 @@ public class WaveManager {
         private boolean waveActive;
         
         // Wave configuration
+        // SPAWN_INTERVAL: Time in ticks (20 ticks = 1 second) between individual enemy spawns
         private static final int SPAWN_INTERVAL = 40; // 2 seconds between spawns
+        // WAVE_DELAY: Time in ticks between waves completing and next wave starting
         private static final int WAVE_DELAY = 600; // 30 seconds between waves
+        // MAX_WAVES: Total number of waves before wave system stops
         private static final int MAX_WAVES = 10;
 
         public WaveData(ServerLevel level, PathData path, BlockPos spawnLocation, List<BlockPos> waypoints) {
