@@ -9,5 +9,8 @@
   "gui.towerdefense.stats": "Stats",
   "gui.towerdefense.abilities": "Abilities",
   "ability.towerdefense.multi_shot": "Multi-Shot",
-  "ability.towerdefense.multi_shot.desc": "Fire multiple arrows at nearby enemies"
+  "ability.towerdefense.multi_shot.desc": "Fire multiple arrows at nearby enemies",
+  "key.categories.towerdefense": "Tower Defense",
+  "key.towerdefense.toggle_gui_mode": "Toggle GUI Control Mode",
+  "key.towerdefense.open_side_gui": "Open Side GUI"
 }
