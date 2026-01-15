@@ -1,3 +1,3 @@
 # Tower Defense Mod
 
-A Minecraft tower defense mod using NeoForge.
+A Minecraft Tower Defense mod using NeoForge.
