@@ -1,7 +1,6 @@
 package com.towerdefense.renderer;
 
-import com.towerdefense.client.animation.BowAnimation;
-import com.towerdefense.client.animation.TowerAnimation;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.towerdefense.entity.tower.BaseTowerEntity;
 import net.minecraft.client.model.ArmorStandModel;
 import net.minecraft.client.model.geom.ModelLayers;
@@ -12,16 +11,17 @@ import net.minecraft.client.renderer.entity.layers.ElytraLayer;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.decoration.ArmorStand;
 
 /**
  * Renderer for tower entities using armor stand model
  * Renders towers as small armor stands with arms visible and animation support
  */
-public class TowerRenderer extends MobRenderer<BaseTowerEntity, ArmorStandModel> {
+public class ArmorStandTowerRenderer extends MobRenderer<BaseTowerEntity, ArmorStandModel> {
 
     private static final ResourceLocation DEFAULT_TEXTURE = ResourceLocation.withDefaultNamespace("textures/entity/armorstand/wood.png");
 
-    public TowerRenderer(EntityRendererProvider.Context context) {
+    public ArmorStandTowerRenderer(EntityRendererProvider.Context context) {
         super(context, new ArmorStandModel(context.bakeLayer(ModelLayers.ARMOR_STAND)), 0.0F);
 
         // Add armor layer so towers can display their armor
@@ -43,6 +43,12 @@ public class TowerRenderer extends MobRenderer<BaseTowerEntity, ArmorStandModel>
     }
 
     @Override
+    protected void scale(BaseTowerEntity entity, PoseStack poseStack, float partialTick) {
+        // Make towers smaller - 0.9 scale for small armor stand appearance
+        poseStack.scale(0.9F, 0.9F, 0.9F);
+    }
+
+    @Override
     public ResourceLocation getTextureLocation(BaseTowerEntity entity) {
         return DEFAULT_TEXTURE;
     }
@@ -51,41 +57,5 @@ public class TowerRenderer extends MobRenderer<BaseTowerEntity, ArmorStandModel>
     protected boolean shouldShowName(BaseTowerEntity entity) {
         // Don't show name tag, we'll use custom health bar rendering instead
         return false;
-    }
-
-    /**
-     * Setup animations for the tower model
-     */
-    @Override
-    protected void setupRotations(BaseTowerEntity entity, com.mojang.blaze3d.vertex.PoseStack poseStack, float ageInTicks, float rotationYaw, float partialTicks) {
-        super.setupRotations(entity, poseStack, ageInTicks, rotationYaw, partialTicks);
-
-        // Scale down for small armor stand appearance
-        poseStack.scale(0.9F, 0.9F, 0.9F);
-    }
-
-    /**
-     * Apply animations to the model before rendering
-     */
-    public void applyAnimations(ArmorStandModel model, BaseTowerEntity entity, float ageInTicks) {
-        // Reset to default pose
-        TowerAnimation.resetPose(model);
-
-        // Get attack animation progress
-        float attackProgress = TowerAnimation.getAttackProgress(entity);
-
-        // Apply appropriate animation based on tower type
-        if (BowAnimation.shouldUseBowAnimation(entity)) {
-            // Bow-specific animation for archer towers
-            BowAnimation.applyBowAnimation(model, entity, attackProgress);
-        } else {
-            // Generic melee attack animation
-            TowerAnimation.applyAttackAnimation(model, entity, attackProgress);
-        }
-
-        // Apply idle animation when not attacking
-        if (attackProgress <= 0.0F) {
-            TowerAnimation.applyIdleAnimation(model, entity, ageInTicks);
-        }
     }
 }

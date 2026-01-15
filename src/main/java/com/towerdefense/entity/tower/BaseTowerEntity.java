@@ -400,6 +400,7 @@ public abstract class BaseTowerEntity extends PathfinderMob {
     public List<TowerAbility> getAbilities() { return abilities; }
     public boolean isMoving() { return entityData.get(IS_MOVING); }
     public BlockPos getMoveTarget() { return moveTarget; }
+    public int getAttackAnimationTick() { return entityData.get(ATTACK_ANIMATION_TICK); }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
