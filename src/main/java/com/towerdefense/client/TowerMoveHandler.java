@@ -95,7 +95,7 @@ public class TowerMoveHandler {
         exitMoveMode();
         
         // Cancel the event to prevent normal click behavior
-        event.setCanceled(true);
+
     }
 
     @SubscribeEvent
