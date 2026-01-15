@@ -1,0 +1,41 @@
+# Gradle
+.gradle/
+build/
+out/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+bin/
+
+# Eclipse
+eclipse/
+
+# NeoForge
+run/
+runs/
+repo/
+
+# Generated resources
+src/generated/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+
+# The gradle wrapper jar needs to be committed
+!gradle/wrapper/gradle-wrapper.jar
