@@ -14,7 +14,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 /**
  * Packet for tower actions (Upgrade, Sell, Start Move)
  */
-public record TowerActionPacket(int towerId, Action action, BlockPos moveTarget) implements CustomPacketPayload {
+public record TowerActionPacket(int towerId, Action action, BlockPos moveTarget, int abilityIndex) implements CustomPacketPayload {
 
     public static final Type<TowerActionPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath(TowerDefenseMod.MOD_ID, "tower_action"));
@@ -38,6 +38,7 @@ public record TowerActionPacket(int towerId, Action action, BlockPos moveTarget)
         if (packet.moveTarget != null) {
             buf.writeBlockPos(packet.moveTarget);
         }
+        buf.writeInt(packet.abilityIndex);
     }
 
     private static TowerActionPacket decode(FriendlyByteBuf buf) {
@@ -47,7 +48,8 @@ public record TowerActionPacket(int towerId, Action action, BlockPos moveTarget)
         if (buf.readBoolean()) {
             moveTarget = buf.readBlockPos();
         }
-        return new TowerActionPacket(towerId, action, moveTarget);
+        int abilityIndex = buf.readInt();
+        return new TowerActionPacket(towerId, action, moveTarget, abilityIndex);
     }
 
     public static void handle(TowerActionPacket packet, IPayloadContext context) {
@@ -68,7 +70,10 @@ public record TowerActionPacket(int towerId, Action action, BlockPos moveTarget)
                             // Actual move is sent via TowerMovePacket
                         }
                         case USE_ABILITY -> {
-                            // Ability usage would be handled here
+                            // Activate ability at the given index
+                            if (packet.abilityIndex >= 0 && packet.abilityIndex < tower.getAbilities().size()) {
+                                tower.getAbilities().get(packet.abilityIndex).activate(tower, null);
+                            }
                         }
                     }
                 }

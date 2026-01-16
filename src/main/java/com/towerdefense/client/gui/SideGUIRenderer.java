@@ -41,6 +41,11 @@ public class SideGUIRenderer {
     private static int upgradeButtonX, upgradeButtonY, upgradeButtonW, upgradeButtonH;
     private static int sellButtonX, sellButtonY, sellButtonW, sellButtonH;
     private static int moveButtonX, moveButtonY, moveButtonW, moveButtonH;
+    private static int[] abilityButtonX = new int[10];
+    private static int[] abilityButtonY = new int[10];
+    private static int[] abilityButtonW = new int[10];
+    private static int[] abilityButtonH = new int[10];
+    private static int abilityButtonCount = 0;
 
     @SubscribeEvent
     public static void onRenderGui(RenderGuiEvent.Post event) {
@@ -133,23 +138,43 @@ public class SideGUIRenderer {
 
         // Abilities section
         List<TowerAbility> abilities = tower.getAbilities();
+        abilityButtonCount = 0;
         if (!abilities.isEmpty()) {
             guiGraphics.drawString(mc.font, "§e--- Abilities ---", contentX, contentY, 0xFFFFFF);
             contentY += 12;
             
-            for (TowerAbility ability : abilities) {
-                // Ability icon
-                guiGraphics.renderItem(ABILITY_ICON, contentX, contentY - 2);
+            for (int i = 0; i < abilities.size(); i++) {
+                TowerAbility ability = abilities.get(i);
                 
+                // Store button bounds
+                abilityButtonX[abilityButtonCount] = contentX;
+                abilityButtonY[abilityButtonCount] = contentY;
+                abilityButtonW[abilityButtonCount] = contentWidth;
+                abilityButtonH[abilityButtonCount] = 20;
+                abilityButtonCount++;
+                
+                // Render as button
+                int bgColor = ability.isOnCooldown() ? 0xFF2C2C2C : 0xFF1A4D1A;
+                guiGraphics.fill(contentX, contentY, contentX + contentWidth, contentY + 20, bgColor);
+                guiGraphics.fill(contentX, contentY, contentX + contentWidth, contentY + 1, 0xFF555555);
+                guiGraphics.fill(contentX, contentY + 19, contentX + contentWidth, contentY + 20, 0xFF555555);
+                guiGraphics.fill(contentX, contentY, contentX + 1, contentY + 20, 0xFF555555);
+                guiGraphics.fill(contentX + contentWidth - 1, contentY, contentX + contentWidth, contentY + 20, 0xFF555555);
+                
+                // Ability icon
+                guiGraphics.renderItem(ABILITY_ICON, contentX + 2, contentY + 2);
+                
+                // Ability name and cooldown
                 String abilityText = ability.getName();
                 if (ability.isOnCooldown()) {
                     float cooldownSeconds = ability.getCurrentCooldown() / 20.0f;
                     abilityText += String.format(" §7(%.1fs)", cooldownSeconds);
-                    guiGraphics.drawString(mc.font, abilityText, contentX + 20, contentY, 0x888888);
+                    guiGraphics.drawString(mc.font, abilityText, contentX + 22, contentY + 6, 0x888888);
                 } else {
-                    guiGraphics.drawString(mc.font, "§a" + abilityText, contentX + 20, contentY, 0xFFFFFF);
+                    guiGraphics.drawString(mc.font, "§a" + abilityText + " §7[READY]", contentX + 22, contentY + 6, 0xFFFFFF);
                 }
-                contentY += 18;
+                
+                contentY += 22;
             }
         }
 
@@ -237,13 +262,13 @@ public class SideGUIRenderer {
 
         // Check upgrade button
         if (isInBounds(mouseX, mouseY, upgradeButtonX, upgradeButtonY, upgradeButtonW, upgradeButtonH)) {
-            ModNetwork.sendToServer(new TowerActionPacket(tower.getId(), TowerActionPacket.Action.UPGRADE, null));
+            ModNetwork.sendToServer(new TowerActionPacket(tower.getId(), TowerActionPacket.Action.UPGRADE, null, -1));
             return true;
         }
 
         // Check sell button
         if (isInBounds(mouseX, mouseY, sellButtonX, sellButtonY, sellButtonW, sellButtonH)) {
-            ModNetwork.sendToServer(new TowerActionPacket(tower.getId(), TowerActionPacket.Action.SELL, null));
+            ModNetwork.sendToServer(new TowerActionPacket(tower.getId(), TowerActionPacket.Action.SELL, null, -1));
             GuiModeManager.clearSelection();
             return true;
         }
@@ -254,6 +279,17 @@ public class SideGUIRenderer {
             com.towerdefense.client.TowerMoveHandler.enterMoveMode(tower.getId());
             GuiModeManager.clearSelection();
             return true;
+        }
+        
+        // Check ability buttons
+        for (int i = 0; i < abilityButtonCount; i++) {
+            if (isInBounds(mouseX, mouseY, abilityButtonX[i], abilityButtonY[i], abilityButtonW[i], abilityButtonH[i])) {
+                // Don't activate if on cooldown
+                if (!tower.getAbilities().get(i).isOnCooldown()) {
+                    ModNetwork.sendToServer(new TowerActionPacket(tower.getId(), TowerActionPacket.Action.USE_ABILITY, null, i));
+                }
+                return true;
+            }
         }
 
         return false;
