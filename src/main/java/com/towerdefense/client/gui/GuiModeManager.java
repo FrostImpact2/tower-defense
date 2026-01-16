@@ -5,54 +5,22 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 
 /**
- * Manages the GUI control mode state
- * Handles switching between Piloting Mode (normal play) and GUI Control Mode
+ * Manages the selected tower for GUI display
+ * Simplified - no mode toggling, GUI appears automatically when tower is selected
  */
 public class GuiModeManager {
 
-    private static boolean isInGuiMode = false;
     private static int selectedTowerId = -1;
     private static BaseTowerEntity selectedTower = null;
 
     /**
-     * Toggle between Piloting Mode and GUI Control Mode
-     */
-    public static void toggleGuiMode() {
-        isInGuiMode = !isInGuiMode;
-        
-        if (!isInGuiMode) {
-            // Exiting GUI mode, clear selection
-            selectedTowerId = -1;
-            selectedTower = null;
-        }
-    }
-
-    /**
-     * Check if currently in GUI Control Mode
-     */
-    public static boolean isInGuiMode() {
-        return isInGuiMode;
-    }
-
-    /**
-     * Set GUI mode state
-     */
-    public static void setGuiMode(boolean enabled) {
-        isInGuiMode = enabled;
-        if (!enabled) {
-            selectedTowerId = -1;
-            selectedTower = null;
-        }
-    }
-
-    /**
      * Select a tower for GUI control
+     * This automatically shows the side GUI
      */
     public static void selectTower(BaseTowerEntity tower) {
         if (tower != null) {
             selectedTowerId = tower.getId();
             selectedTower = tower;
-            isInGuiMode = true;
         }
     }
 
@@ -67,7 +35,6 @@ public class GuiModeManager {
             Entity entity = mc.level.getEntity(towerId);
             if (entity instanceof BaseTowerEntity tower) {
                 selectedTower = tower;
-                isInGuiMode = true;
             }
         }
     }
@@ -94,7 +61,6 @@ public class GuiModeManager {
         if (selectedTower != null && !selectedTower.isAlive()) {
             selectedTower = null;
             selectedTowerId = -1;
-            isInGuiMode = false;
         }
 
         return selectedTower;
@@ -120,5 +86,31 @@ public class GuiModeManager {
      */
     public static boolean hasTowerSelected() {
         return getSelectedTower() != null;
+    }
+
+    /**
+     * @deprecated Mode toggle concept removed - GUI shows automatically on tower selection
+     */
+    @Deprecated
+    public static boolean isInGuiMode() {
+        return hasTowerSelected();
+    }
+
+    /**
+     * @deprecated Mode toggle concept removed - use selectTower() or clearSelection() instead
+     */
+    @Deprecated
+    public static void setGuiMode(boolean enabled) {
+        if (!enabled) {
+            clearSelection();
+        }
+    }
+
+    /**
+     * @deprecated Mode toggle concept removed
+     */
+    @Deprecated
+    public static void toggleGuiMode() {
+        // No-op
     }
 }

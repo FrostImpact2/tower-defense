@@ -22,6 +22,8 @@ public class ModEventHandlers {
     public static void onEntityAttributeCreation(EntityAttributeCreationEvent event) {
         // Register tower attributes
         event.put(ModEntities.ARCHER_TOWER.get(), ArcherTowerEntity.createAttributes().build());
+        event.put(ModEntities.TANK_TOWER.get(), com.towerdefense.entity.tower.TankTowerEntity.createAttributes().build());
+        event.put(ModEntities.MAGE_TOWER.get(), com.towerdefense.entity.tower.MageTowerEntity.createAttributes().build());
         
         // Register enemy attributes
         event.put(ModEntities.ZOMBIE_ENEMY.get(), ZombieEnemyEntity.createAttributes().build());
@@ -37,6 +39,7 @@ class GameEventHandlers {
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         SpawnPathCommand.register(event.getDispatcher());
+        com.towerdefense.command.GenerateMapCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent

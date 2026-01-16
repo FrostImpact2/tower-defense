@@ -54,6 +54,8 @@ public class ArcherTowerEntity extends BaseTowerEntity {
     @Override
     protected void initializeAbilities() {
         abilities.add(new MultiShotAbility());
+        abilities.add(new com.towerdefense.ability.RapidFireAbility());
+        abilities.add(new com.towerdefense.ability.CriticalStrikeAbility());
     }
 
     @Override
