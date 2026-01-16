@@ -76,7 +76,18 @@ public class RapidFireAbility extends AbstractTowerAbility {
             // End rapid fire
             if (remainingDuration == 0 && originalAttackSpeed > 0) {
                 tower.getStats().setAttackSpeed(originalAttackSpeed);
+                originalAttackSpeed = 0;
             }
+        }
+    }
+    
+    @Override
+    public void reset() {
+        super.reset();
+        // Reset attack speed when ability is reset (e.g., tower removed or upgraded)
+        if (originalAttackSpeed > 0) {
+            remainingDuration = 0;
+            originalAttackSpeed = 0;
         }
     }
 }

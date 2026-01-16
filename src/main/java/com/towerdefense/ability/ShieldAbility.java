@@ -79,7 +79,20 @@ public class ShieldAbility extends AbstractTowerAbility {
     
     /**
      * Absorb damage with shield
-     * Should be called from tower's hurt method
+     * This method should be called from the tower's hurt method to reduce incoming damage.
+     * 
+     * Example integration in BaseTowerEntity.hurt():
+     * <pre>{@code
+     * for (TowerAbility ability : abilities) {
+     *     if (ability instanceof ShieldAbility shield) {
+     *         amount = shield.absorbDamage(this, amount);
+     *     }
+     * }
+     * }</pre>
+     * 
+     * @param tower The tower with this shield ability
+     * @param damage The incoming damage amount
+     * @return The remaining damage after shield absorption
      */
     public float absorbDamage(BaseTowerEntity tower, float damage) {
         if (remainingShield <= 0 || remainingDuration <= 0) {

@@ -49,7 +49,23 @@ public class CriticalStrikeAbility extends AbstractTowerAbility {
     
     /**
      * Apply critical strike damage if ready
-     * Should be called from tower's attack method
+     * This method should be called from the tower's attack method to apply critical damage.
+     * 
+     * Example integration in BaseTowerEntity.performAttack():
+     * <pre>{@code
+     * float finalDamage = stats.getDamage();
+     * for (TowerAbility ability : abilities) {
+     *     if (ability instanceof CriticalStrikeAbility crit) {
+     *         finalDamage = crit.applyCriticalStrike(this, target, finalDamage);
+     *     }
+     * }
+     * target.hurt(damageSources().mobAttack(this), finalDamage);
+     * }</pre>
+     * 
+     * @param tower The tower performing the attack
+     * @param target The target being attacked
+     * @param baseDamage The base damage amount
+     * @return The modified damage (3x if crit ready, otherwise unchanged)
      */
     public float applyCriticalStrike(BaseTowerEntity tower, LivingEntity target, float baseDamage) {
         if (!critReady) {

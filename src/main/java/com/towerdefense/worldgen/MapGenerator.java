@@ -23,6 +23,8 @@ public class MapGenerator {
     private static final int PATH_WIDTH = 3;
     private static final int PLATFORM_SIZE = 5;
     private static final int CLEAR_HEIGHT = 10;
+    private static final int DECORATION_COUNT = 10;
+    private static final double DECORATION_PATH_CLEARANCE_SQ = 25.0; // 5 blocks squared
     
     /**
      * Generate a tower defense map at the specified location
@@ -211,7 +213,7 @@ public class MapGenerator {
         // Add some trees and barriers for visual appeal
         int halfSize = size / 2;
         
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < DECORATION_COUNT; i++) {
             int x = center.getX() + level.random.nextInt(size) - halfSize;
             int z = center.getZ() + level.random.nextInt(size) - halfSize;
             BlockPos pos = findGroundLevel(level, new BlockPos(x, center.getY(), z)).above();
@@ -219,7 +221,7 @@ public class MapGenerator {
             // Check if not on path
             boolean onPath = false;
             for (BlockPos pathPoint : pathPoints) {
-                if (pos.distSqr(pathPoint) < 25) {
+                if (pos.distSqr(pathPoint) < DECORATION_PATH_CLEARANCE_SQ) {
                     onPath = true;
                     break;
                 }
