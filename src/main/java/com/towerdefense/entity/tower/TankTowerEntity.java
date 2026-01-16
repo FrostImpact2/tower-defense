@@ -40,8 +40,9 @@ public class TankTowerEntity extends BaseTowerEntity {
 
     @Override
     protected void initializeAbilities() {
-        // Tank abilities will be added in Phase 4
-        // Possible abilities: Shield, Taunt, Heal
+        // Tank abilities: defensive and supportive
+        abilities.add(new com.towerdefense.ability.ShieldAbility());
+        abilities.add(new com.towerdefense.ability.HealAuraAbility());
     }
 
     @Override

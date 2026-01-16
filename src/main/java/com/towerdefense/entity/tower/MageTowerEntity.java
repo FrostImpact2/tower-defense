@@ -41,8 +41,10 @@ public class MageTowerEntity extends BaseTowerEntity {
 
     @Override
     protected void initializeAbilities() {
-        // Mage abilities will be added in Phase 4
-        // Possible abilities: Chain Lightning, Slow Field, Explosive Shot
+        // Mage abilities: AoE and crowd control
+        abilities.add(new com.towerdefense.ability.ChainLightningAbility());
+        abilities.add(new com.towerdefense.ability.ExplosiveShotAbility());
+        abilities.add(new com.towerdefense.ability.SlowFieldAbility());
     }
 
     @Override
