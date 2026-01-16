@@ -1,4 +1,4 @@
-package com.towerdefense.path;
+    package com.towerdefense.path;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
