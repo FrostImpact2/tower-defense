@@ -21,6 +21,8 @@ public class ClientEvents {
         event.enqueueWork(() -> {
             // Register entity renderers
             EntityRenderers.register(ModEntities.ARCHER_TOWER.get(), TowerRenderer::new);
+            EntityRenderers.register(ModEntities.TANK_TOWER.get(), TowerRenderer::new);
+            EntityRenderers.register(ModEntities.MAGE_TOWER.get(), TowerRenderer::new);
             EntityRenderers.register(ModEntities.ZOMBIE_ENEMY.get(), EnemyRenderer::new);
         });
     }
