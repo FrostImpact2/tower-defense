@@ -19,27 +19,17 @@ public class KeyBindings {
     // Category for all tower defense keybindings
     public static final String CATEGORY = "key.categories." + TowerDefenseMod.MOD_ID;
 
-    // Toggle between Piloting Mode and GUI Control Mode
-    public static final KeyMapping TOGGLE_GUI_MODE = new KeyMapping(
-            "key." + TowerDefenseMod.MOD_ID + ".toggle_gui_mode",
+    // Teleport selected tower to player position
+    public static final KeyMapping TELEPORT_TOWER = new KeyMapping(
+            "key." + TowerDefenseMod.MOD_ID + ".teleport_tower",
             KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_G, // Default to 'G' key
-            CATEGORY
-    );
-
-    // Open/close side GUI
-    public static final KeyMapping OPEN_SIDE_GUI = new KeyMapping(
-            "key." + TowerDefenseMod.MOD_ID + ".open_side_gui",
-            KeyConflictContext.IN_GAME,
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_T, // Default to 'T' key
+            GLFW.GLFW_KEY_V, // Default to 'V' key
             CATEGORY
     );
 
     @SubscribeEvent
     public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
-        event.register(TOGGLE_GUI_MODE);
-        event.register(OPEN_SIDE_GUI);
+        event.register(TELEPORT_TOWER);
     }
 }

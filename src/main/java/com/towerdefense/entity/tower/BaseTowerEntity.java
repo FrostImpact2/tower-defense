@@ -2,7 +2,6 @@ package com.towerdefense.entity.tower;
 
 import com.towerdefense.ability.TowerAbility;
 import com.towerdefense.entity.enemy.BaseEnemyEntity;
-import com.towerdefense.gui.TowerMenuProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -11,7 +10,6 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -261,11 +259,8 @@ public abstract class BaseTowerEntity extends PathfinderMob {
 
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
-        if (!level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
-            // Open tower GUI
-            serverPlayer.openMenu(new TowerMenuProvider(this), buf -> buf.writeInt(this.getId()));
-            return InteractionResult.SUCCESS;
-        }
+        // Tower selection is now handled client-side via KeyInputHandler
+        // No GUI opens server-side anymore - side panel is client-only
         return InteractionResult.sidedSuccess(level().isClientSide());
     }
 

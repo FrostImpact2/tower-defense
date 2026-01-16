@@ -44,7 +44,8 @@ public class SideGUIRenderer {
 
     @SubscribeEvent
     public static void onRenderGui(RenderGuiEvent.Post event) {
-        if (!GuiModeManager.isInGuiMode()) {
+        // Show GUI automatically when a tower is selected
+        if (!GuiModeManager.hasTowerSelected()) {
             return;
         }
 
@@ -82,19 +83,10 @@ public class SideGUIRenderer {
 
         TowerStats stats = tower.getStats();
 
-        // Mode indicator
-        String modeText = "§aGUI Control Mode";
-        guiGraphics.drawString(mc.font, modeText, contentX, contentY, 0xFFFFFF);
-        contentY += 15;
-
-        // Separator
-        guiGraphics.fill(contentX, contentY, contentX + contentWidth, contentY + 1, 0xFF666666);
-        contentY += 5;
-
         // Tower name and level
         String titleText = tower.getTowerName() + " §7(Lv. " + stats.getLevel() + ")";
         guiGraphics.drawString(mc.font, titleText, contentX, contentY, 0xFFD700);
-        contentY += 12;
+        contentY += 15;
 
         // Tower role
         String roleText = "§6Role: §f" + tower.getTowerRole();
@@ -234,7 +226,7 @@ public class SideGUIRenderer {
      * Handle mouse clicks on the side panel
      */
     public static boolean handleClick(double mouseX, double mouseY) {
-        if (!GuiModeManager.isInGuiMode() || !GuiModeManager.hasTowerSelected()) {
+        if (!GuiModeManager.hasTowerSelected()) {
             return false;
         }
 
@@ -253,7 +245,6 @@ public class SideGUIRenderer {
         if (isInBounds(mouseX, mouseY, sellButtonX, sellButtonY, sellButtonW, sellButtonH)) {
             ModNetwork.sendToServer(new TowerActionPacket(tower.getId(), TowerActionPacket.Action.SELL, null));
             GuiModeManager.clearSelection();
-            GuiModeManager.setGuiMode(false);
             return true;
         }
 
@@ -261,7 +252,7 @@ public class SideGUIRenderer {
         if (isInBounds(mouseX, mouseY, moveButtonX, moveButtonY, moveButtonW, moveButtonH)) {
             // Enter move mode
             com.towerdefense.client.TowerMoveHandler.enterMoveMode(tower.getId());
-            GuiModeManager.setGuiMode(false);
+            GuiModeManager.clearSelection();
             return true;
         }
 

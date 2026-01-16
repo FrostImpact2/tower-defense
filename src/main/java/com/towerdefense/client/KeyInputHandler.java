@@ -4,7 +4,10 @@ import com.towerdefense.TowerDefenseMod;
 import com.towerdefense.client.gui.GuiModeManager;
 import com.towerdefense.client.gui.SideGUIRenderer;
 import com.towerdefense.entity.tower.BaseTowerEntity;
+import com.towerdefense.network.ModNetwork;
+import com.towerdefense.network.TowerMovePacket;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -12,10 +15,9 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 /**
- * Handles keybinding input and GUI mode interactions
+ * Handles keybinding input and tower interactions
  */
 @EventBusSubscriber(modid = TowerDefenseMod.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class KeyInputHandler {
@@ -27,49 +29,19 @@ public class KeyInputHandler {
             return;
         }
 
-        // Toggle GUI mode
-        if (KeyBindings.TOGGLE_GUI_MODE.consumeClick()) {
-            GuiModeManager.toggleGuiMode();
-            
-            // If entering GUI mode without a tower selected, try to select the one being looked at
-            if (GuiModeManager.isInGuiMode() && !GuiModeManager.hasTowerSelected()) {
-                HitResult hitResult = mc.hitResult;
-                if (hitResult != null && hitResult.getType() == HitResult.Type.ENTITY) {
-                    EntityHitResult entityHit = (EntityHitResult) hitResult;
-                    Entity entity = entityHit.getEntity();
-                    if (entity instanceof BaseTowerEntity tower) {
-                        GuiModeManager.selectTower(tower);
-                    }
-                }
-            }
-            
-            String mode = GuiModeManager.isInGuiMode() ? "GUI Control Mode" : "Piloting Mode";
-            mc.gui.setOverlayMessage(
-                net.minecraft.network.chat.Component.literal("Switched to " + mode),
-                false
-            );
-        }
-
-        // Open side GUI (alternative way to enter GUI mode)
-        if (KeyBindings.OPEN_SIDE_GUI.consumeClick()) {
-            if (!GuiModeManager.isInGuiMode()) {
-                // Try to select tower being looked at
-                HitResult hitResult = mc.hitResult;
-                if (hitResult != null && hitResult.getType() == HitResult.Type.ENTITY) {
-                    EntityHitResult entityHit = (EntityHitResult) hitResult;
-                    Entity entity = entityHit.getEntity();
-                    if (entity instanceof BaseTowerEntity tower) {
-                        GuiModeManager.selectTower(tower);
-                        mc.gui.setOverlayMessage(
-                            net.minecraft.network.chat.Component.literal("Selected " + tower.getTowerName()),
-                            false
-                        );
-                    }
-                }
-            } else {
-                GuiModeManager.setGuiMode(false);
+        // Teleport selected tower to player position
+        if (KeyBindings.TELEPORT_TOWER.consumeClick()) {
+            BaseTowerEntity tower = GuiModeManager.getSelectedTower();
+            if (tower != null) {
+                BlockPos playerPos = mc.player.blockPosition();
+                ModNetwork.sendToServer(new TowerMovePacket(tower.getId(), playerPos));
                 mc.gui.setOverlayMessage(
-                    net.minecraft.network.chat.Component.literal("Exited GUI Control Mode"),
+                    net.minecraft.network.chat.Component.literal("Teleporting " + tower.getTowerName() + " to your position"),
+                    false
+                );
+            } else {
+                mc.gui.setOverlayMessage(
+                    net.minecraft.network.chat.Component.literal("No tower selected! Click on a tower first."),
                     false
                 );
             }
@@ -84,7 +56,7 @@ public class KeyInputHandler {
         }
 
         // Handle clicks on side GUI
-        if (GuiModeManager.isInGuiMode() && event.getButton() == 0) { // Left click
+        if (GuiModeManager.hasTowerSelected() && event.getButton() == 0) { // Left click
             double mouseX = mc.mouseHandler.xpos() * mc.getWindow().getGuiScaledWidth() / mc.getWindow().getScreenWidth();
             double mouseY = mc.mouseHandler.ypos() * mc.getWindow().getGuiScaledHeight() / mc.getWindow().getScreenHeight();
             
@@ -94,8 +66,8 @@ public class KeyInputHandler {
             }
         }
 
-        // In GUI mode, clicking on a tower selects it
-        if (GuiModeManager.isInGuiMode() && event.getButton() == 0) { // Left click
+        // Clicking on a tower selects it and shows GUI automatically
+        if (event.getButton() == 0) { // Left click
             HitResult hitResult = mc.hitResult;
             if (hitResult != null && hitResult.getType() == HitResult.Type.ENTITY) {
                 EntityHitResult entityHit = (EntityHitResult) hitResult;
@@ -108,18 +80,6 @@ public class KeyInputHandler {
                     );
                     event.setCanceled(true);
                 }
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public static void onPlayerTick(PlayerTickEvent.Post event) {
-        // Disable movement in GUI mode
-        if (GuiModeManager.isInGuiMode() && event.getEntity().level().isClientSide()) {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.player != null) {
-                // This is handled by the input system, but we keep track of mode here
-                // Movement input will be blocked by checking GuiModeManager.isInGuiMode() elsewhere
             }
         }
     }
