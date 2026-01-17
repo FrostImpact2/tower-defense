@@ -27,7 +27,7 @@ import java.util.List;
 @EventBusSubscriber(modid = TowerDefenseMod.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class SideGUIRenderer {
 
-    private static final int PANEL_WIDTH = 220;
+    private static final int PANEL_WIDTH = 170;
     private static final int PANEL_PADDING = 10;
     private static final int PANEL_MARGIN_TOP = 20;
     
@@ -88,31 +88,24 @@ public class SideGUIRenderer {
 
         TowerStats stats = tower.getStats();
 
-        // Tower name and level
+        // Tower name and level (smaller)
         String titleText = tower.getTowerName() + " §7(Lv. " + stats.getLevel() + ")";
-        guiGraphics.drawString(mc.font, titleText, contentX, contentY, 0xFFD700);
-        contentY += 15;
-
-        // Tower role
-        String roleText = "§6Role: §f" + tower.getTowerRole();
-        guiGraphics.drawString(mc.font, roleText, contentX, contentY, 0xFFFFFF);
-        contentY += 15;
-
-        // Tower icon/equipment
-        ItemStack displayItem = tower.getMainHandItem();
-        if (!displayItem.isEmpty()) {
-            guiGraphics.renderItem(displayItem, contentX, contentY);
-        }
-        contentY += 20;
-
-        // Stats section
-        guiGraphics.drawString(mc.font, "§e--- Stats ---", contentX, contentY, 0xFFFFFF);
+        guiGraphics.drawString(mc.font, titleText, contentX, contentY, 0xFFD700, false);
         contentY += 12;
 
-        // Health bar
+        // Tower role (smaller)
+        String roleText = "§6" + tower.getTowerRole();
+        guiGraphics.drawString(mc.font, roleText, contentX, contentY, 0xFFFFFF, false);
+        contentY += 10;
+
+        // Stats section
+        guiGraphics.drawString(mc.font, "§e--- Stats ---", contentX, contentY, 0xFFFFFF, false);
+        contentY += 10;
+
+        // Health bar (smaller)
         float healthPercent = stats.getCurrentHealth() / stats.getMaxHealth();
         int barWidth = contentWidth;
-        int barHeight = 10;
+        int barHeight = 8;
         
         // Background
         guiGraphics.fill(contentX, contentY, contentX + barWidth, contentY + barHeight, 0xFF333333);
@@ -121,27 +114,43 @@ public class SideGUIRenderer {
         int healthColor = getHealthColor(healthPercent);
         guiGraphics.fill(contentX, contentY, contentX + (int)(barWidth * healthPercent), contentY + barHeight, healthColor);
         
-        // Health text
-        String healthText = String.format("§fHP: %.0f / %.0f", stats.getCurrentHealth(), stats.getMaxHealth());
-        guiGraphics.drawString(mc.font, healthText, contentX + 2, contentY + 1, 0xFFFFFF);
-        contentY += barHeight + 8;
+        // Health text (smaller)
+        String healthText = String.format("HP: %.0f/%.0f", stats.getCurrentHealth(), stats.getMaxHealth());
+        guiGraphics.drawString(mc.font, healthText, contentX + 2, contentY + 0, 0xFFFFFF, false);
+        contentY += barHeight + 5;
 
-        // Other stats
-        guiGraphics.drawString(mc.font, String.format("§7Damage: §f%.1f", stats.getDamage()), contentX, contentY, 0xFFFFFF);
+        // Other stats (more compact)
+        guiGraphics.drawString(mc.font, String.format("§7DMG: §f%.1f", stats.getDamage()), contentX, contentY, 0xFFFFFF, false);
+        contentY += 9;
+        guiGraphics.drawString(mc.font, String.format("§7RNG: §f%.1f", stats.getRange()), contentX, contentY, 0xFFFFFF, false);
+        contentY += 9;
+        guiGraphics.drawString(mc.font, String.format("§7SPD: §f%.2f/s", stats.getAttackSpeed()), contentX, contentY, 0xFFFFFF, false);
+        contentY += 9;
+        guiGraphics.drawString(mc.font, String.format("§7AGG: §f%d", stats.getAggroLimit()), contentX, contentY, 0xFFFFFF, false);
+        contentY += 12;
+
+        // Upgrade preview
+        guiGraphics.drawString(mc.font, "§e--- Next Level ---", contentX, contentY, 0xFFFFFF, false);
         contentY += 10;
-        guiGraphics.drawString(mc.font, String.format("§7Range: §f%.1f", stats.getRange()), contentX, contentY, 0xFFFFFF);
-        contentY += 10;
-        guiGraphics.drawString(mc.font, String.format("§7Attack Speed: §f%.2f/s", stats.getAttackSpeed()), contentX, contentY, 0xFFFFFF);
-        contentY += 10;
-        guiGraphics.drawString(mc.font, String.format("§7Aggro Limit: §f%d", stats.getAggroLimit()), contentX, contentY, 0xFFFFFF);
-        contentY += 15;
+        
+        // Calculate next level stats (using multipliers: 1.2 DMG, 1.15 HP, 1.1 RNG)
+        float nextDamage = stats.getDamage() * 1.2f;
+        float nextHealth = stats.getMaxHealth() * 1.15f;
+        float nextRange = stats.getRange() * 1.1f;
+        
+        guiGraphics.drawString(mc.font, String.format("§a+20%% DMG §7(%.1f)", nextDamage), contentX, contentY, 0xFFFFFF, false);
+        contentY += 9;
+        guiGraphics.drawString(mc.font, String.format("§a+15%% HP §7(%.0f)", nextHealth), contentX, contentY, 0xFFFFFF, false);
+        contentY += 9;
+        guiGraphics.drawString(mc.font, String.format("§a+10%% RNG §7(%.1f)", nextRange), contentX, contentY, 0xFFFFFF, false);
+        contentY += 12;
 
         // Abilities section
         List<TowerAbility> abilities = tower.getAbilities();
         abilityButtonCount = 0;
         if (!abilities.isEmpty()) {
-            guiGraphics.drawString(mc.font, "§e--- Abilities ---", contentX, contentY, 0xFFFFFF);
-            contentY += 12;
+            guiGraphics.drawString(mc.font, "§e--- Abilities ---", contentX, contentY, 0xFFFFFF, false);
+            contentY += 10;
             
             for (int i = 0; i < abilities.size(); i++) {
                 TowerAbility ability = abilities.get(i);
@@ -150,50 +159,46 @@ public class SideGUIRenderer {
                 abilityButtonX[abilityButtonCount] = contentX;
                 abilityButtonY[abilityButtonCount] = contentY;
                 abilityButtonW[abilityButtonCount] = contentWidth;
-                abilityButtonH[abilityButtonCount] = 20;
+                abilityButtonH[abilityButtonCount] = 16;
                 abilityButtonCount++;
                 
-                // Render as button
+                // Render as button (smaller)
                 int bgColor = ability.isOnCooldown() ? 0xFF2C2C2C : 0xFF1A4D1A;
-                guiGraphics.fill(contentX, contentY, contentX + contentWidth, contentY + 20, bgColor);
+                guiGraphics.fill(contentX, contentY, contentX + contentWidth, contentY + 16, bgColor);
                 guiGraphics.fill(contentX, contentY, contentX + contentWidth, contentY + 1, 0xFF555555);
-                guiGraphics.fill(contentX, contentY + 19, contentX + contentWidth, contentY + 20, 0xFF555555);
-                guiGraphics.fill(contentX, contentY, contentX + 1, contentY + 20, 0xFF555555);
-                guiGraphics.fill(contentX + contentWidth - 1, contentY, contentX + contentWidth, contentY + 20, 0xFF555555);
+                guiGraphics.fill(contentX, contentY + 15, contentX + contentWidth, contentY + 16, 0xFF555555);
+                guiGraphics.fill(contentX, contentY, contentX + 1, contentY + 16, 0xFF555555);
+                guiGraphics.fill(contentX + contentWidth - 1, contentY, contentX + contentWidth, contentY + 16, 0xFF555555);
                 
-                // Ability icon
-                guiGraphics.renderItem(ABILITY_ICON, contentX + 2, contentY + 2);
-                
-                // Ability name and cooldown
+                // Ability name and cooldown (smaller)
                 String abilityText = ability.getName();
                 if (ability.isOnCooldown()) {
                     float cooldownSeconds = ability.getCurrentCooldown() / 20.0f;
                     abilityText += String.format(" §7(%.1fs)", cooldownSeconds);
-                    guiGraphics.drawString(mc.font, abilityText, contentX + 22, contentY + 6, 0x888888);
+                    guiGraphics.drawString(mc.font, abilityText, contentX + 3, contentY + 4, 0x888888, false);
                 } else {
-                    guiGraphics.drawString(mc.font, "§a" + abilityText + " §7[READY]", contentX + 22, contentY + 6, 0xFFFFFF);
+                    guiGraphics.drawString(mc.font, "§a" + abilityText, contentX + 3, contentY + 4, 0xFFFFFF, false);
                 }
                 
-                contentY += 22;
+                contentY += 17;
             }
         }
 
-        contentY += 5;
+        contentY += 3;
 
         // Action buttons
-        guiGraphics.drawString(mc.font, "§e--- Actions ---", contentX, contentY, 0xFFFFFF);
-        contentY += 12;
+        guiGraphics.drawString(mc.font, "§e--- Actions ---", contentX, contentY, 0xFFFFFF, false);
+        contentY += 10;
 
         int buttonWidth = (contentWidth - 5) / 2;
-        int buttonHeight = 24;
+        int buttonHeight = 22;
 
-        // Upgrade button
+        // Upgrade button with preview
         upgradeButtonX = contentX;
         upgradeButtonY = contentY;
         upgradeButtonW = buttonWidth;
         upgradeButtonH = buttonHeight;
-        renderActionButton(guiGraphics, contentX, contentY, buttonWidth, buttonHeight, 
-                          UPGRADE_ICON, "Upgrade", stats.getUpgradeCost() + "g", mc);
+        renderUpgradeButton(guiGraphics, contentX, contentY, buttonWidth, buttonHeight, stats, mc);
 
         // Sell button
         sellButtonX = contentX + buttonWidth + 5;
@@ -203,7 +208,7 @@ public class SideGUIRenderer {
         renderActionButton(guiGraphics, contentX + buttonWidth + 5, contentY, buttonWidth, buttonHeight,
                           SELL_ICON, "Sell", stats.getSellValue() + "g", mc);
 
-        contentY += buttonHeight + 5;
+        contentY += buttonHeight + 4;
 
         // Move button
         moveButtonX = contentX;
@@ -211,7 +216,28 @@ public class SideGUIRenderer {
         moveButtonW = contentWidth;
         moveButtonH = buttonHeight;
         renderActionButton(guiGraphics, contentX, contentY, contentWidth, buttonHeight,
-                          MOVE_ICON, "Move Tower", "", mc);
+                          MOVE_ICON, "Move", "", mc);
+    }
+
+    private static void renderUpgradeButton(GuiGraphics guiGraphics, int x, int y, int width, int height,
+                                           TowerStats stats, Minecraft mc) {
+        // Button background
+        guiGraphics.fill(x, y, x + width, y + height, 0xFF2C2C2C);
+        
+        // Button border
+        guiGraphics.fill(x, y, x + width, y + 1, 0xFF555555);
+        guiGraphics.fill(x, y + height - 1, x + width, y + height, 0xFF555555);
+        guiGraphics.fill(x, y, x + 1, y + height, 0xFF555555);
+        guiGraphics.fill(x + width - 1, y, x + width, y + height, 0xFF555555);
+
+        // Icon
+        guiGraphics.renderItem(UPGRADE_ICON, x + 3, y + 3);
+
+        // Label
+        guiGraphics.drawString(mc.font, "Upgrade", x + 22, y + 3, 0xFFFFFF, false);
+        
+        // Cost
+        guiGraphics.drawString(mc.font, "§6" + stats.getUpgradeCost() + "g", x + 22, y + 12, 0xFFFFFF, false);
     }
 
     private static void renderActionButton(GuiGraphics guiGraphics, int x, int y, int width, int height,

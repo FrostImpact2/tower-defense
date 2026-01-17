@@ -74,8 +74,18 @@ public class EntityHealthBarRenderer {
      */
     private static void renderHealthBar(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
                                         LivingEntity entity, String name, Font font) {
-        float health = entity.getHealth();
-        float maxHealth = entity.getMaxHealth();
+        float health;
+        float maxHealth;
+        
+        // For towers, use TowerStats health values
+        if (entity instanceof BaseTowerEntity tower) {
+            health = tower.getStats().getCurrentHealth();
+            maxHealth = tower.getStats().getMaxHealth();
+        } else {
+            health = entity.getHealth();
+            maxHealth = entity.getMaxHealth();
+        }
+        
         float healthPercent = health / maxHealth;
 
         poseStack.pushPose();

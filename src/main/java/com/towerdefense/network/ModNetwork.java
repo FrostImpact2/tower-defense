@@ -34,6 +34,13 @@ public class ModNetwork {
             TowerMovePacket.STREAM_CODEC,
             TowerMovePacket::handle
         );
+        
+        // Register tower selection packet (client -> server)
+        registrar.playToServer(
+            TowerSelectionPacket.TYPE,
+            TowerSelectionPacket.STREAM_CODEC,
+            TowerSelectionPacket::handle
+        );
     }
 
     /**

@@ -50,6 +50,7 @@ public abstract class BaseTowerEntity extends PathfinderMob {
     // Synced data
     private static final EntityDataAccessor<Boolean> IS_MOVING = SynchedEntityData.defineId(BaseTowerEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> ATTACK_ANIMATION_TICK = SynchedEntityData.defineId(BaseTowerEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> IS_SELECTED = SynchedEntityData.defineId(BaseTowerEntity.class, EntityDataSerializers.BOOLEAN);
 
     // Tower state
     protected TowerStats stats;
@@ -113,6 +114,7 @@ public abstract class BaseTowerEntity extends PathfinderMob {
         super.defineSynchedData(builder);
         builder.define(IS_MOVING, false);
         builder.define(ATTACK_ANIMATION_TICK, 0);
+        builder.define(IS_SELECTED, false);
     }
 
     @Override
@@ -149,6 +151,33 @@ public abstract class BaseTowerEntity extends PathfinderMob {
         } else {
             // Client-side animation updates
             updateClientAnimation();
+            
+            // Spawn selection particles if selected
+            if (entityData.get(IS_SELECTED) && tickCount % 4 == 0) {
+                spawnSelectionParticles();
+            }
+        }
+    }
+    
+    /**
+     * Spawn particles around selected tower
+     */
+    protected void spawnSelectionParticles() {
+        // Spawn particles in a ring around the tower
+        double radius = 0.7;
+        int particleCount = 8;
+        for (int i = 0; i < particleCount; i++) {
+            double angle = (Math.PI * 2 * i) / particleCount + (tickCount * 0.05);
+            double xOffset = Math.cos(angle) * radius;
+            double zOffset = Math.sin(angle) * radius;
+            
+            level().addParticle(
+                ParticleTypes.END_ROD,
+                getX() + xOffset,
+                getY() + 0.1,
+                getZ() + zOffset,
+                0, 0.02, 0
+            );
         }
     }
 
@@ -272,9 +301,9 @@ public abstract class BaseTowerEntity extends PathfinderMob {
         this.isInMoveMode = true;
         entityData.set(IS_MOVING, true);
         
-        // Use pathfinding to navigate
+        // Use pathfinding to navigate - with speed multiplier
         PathNavigation nav = getNavigation();
-        nav.moveTo(target.getX() + 0.5, target.getY(), target.getZ() + 0.5, 1.0);
+        nav.moveTo(target.getX() + 0.5, target.getY(), target.getZ() + 0.5, 1.2);
     }
 
     /**
@@ -396,6 +425,14 @@ public abstract class BaseTowerEntity extends PathfinderMob {
     public boolean isMoving() { return entityData.get(IS_MOVING); }
     public BlockPos getMoveTarget() { return moveTarget; }
     public int getAttackAnimationTick() { return entityData.get(ATTACK_ANIMATION_TICK); }
+    public boolean isSelected() { return entityData.get(IS_SELECTED); }
+    
+    /**
+     * Set whether this tower is selected (synced to clients)
+     */
+    public void setSelected(boolean selected) {
+        entityData.set(IS_SELECTED, selected);
+    }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
@@ -481,12 +518,12 @@ public abstract class BaseTowerEntity extends PathfinderMob {
 
         @Override
         public boolean canUse() {
-            return tower.isInMoveMode && tower.moveTarget != null;
+            return tower.isInMoveMode && tower.moveTarget != null && !tower.hasReachedMoveTarget();
         }
 
         @Override
         public boolean canContinueToUse() {
-            return canUse() && !tower.hasReachedMoveTarget();
+            return tower.isInMoveMode && tower.moveTarget != null && !tower.hasReachedMoveTarget();
         }
 
         @Override
@@ -496,7 +533,7 @@ public abstract class BaseTowerEntity extends PathfinderMob {
                     tower.moveTarget.getX() + 0.5,
                     tower.moveTarget.getY(),
                     tower.moveTarget.getZ() + 0.5,
-                    1.0
+                    1.2
                 );
             }
         }
@@ -508,7 +545,18 @@ public abstract class BaseTowerEntity extends PathfinderMob {
 
         @Override
         public void tick() {
-            if (tower.hasReachedMoveTarget()) {
+            // Keep navigating to target
+            if (tower.moveTarget != null && !tower.hasReachedMoveTarget()) {
+                if (tower.getNavigation().isDone()) {
+                    // Navigation finished but target not reached - restart navigation
+                    tower.getNavigation().moveTo(
+                        tower.moveTarget.getX() + 0.5,
+                        tower.moveTarget.getY(),
+                        tower.moveTarget.getZ() + 0.5,
+                        1.2
+                    );
+                }
+            } else if (tower.hasReachedMoveTarget()) {
                 tower.stopMoving();
             }
         }
