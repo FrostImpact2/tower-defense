@@ -3,6 +3,7 @@ package com.towerdefense.event;
 import com.towerdefense.TowerDefenseMod;
 import com.towerdefense.command.SpawnPathCommand;
 import com.towerdefense.entity.enemy.ZombieEnemyEntity;
+import com.towerdefense.entity.tower.AilyonTowerEntity;
 import com.towerdefense.entity.tower.ArcherTowerEntity;
 import com.towerdefense.registry.ModEntities;
 import com.towerdefense.wave.WaveManager;
@@ -24,6 +25,7 @@ public class ModEventHandlers {
         event.put(ModEntities.ARCHER_TOWER.get(), ArcherTowerEntity.createAttributes().build());
         event.put(ModEntities.TANK_TOWER.get(), com.towerdefense.entity.tower.TankTowerEntity.createAttributes().build());
         event.put(ModEntities.MAGE_TOWER.get(), com.towerdefense.entity.tower.MageTowerEntity.createAttributes().build());
+        event.put(ModEntities.AILYON_TOWER.get(), AilyonTowerEntity.createAttributes().build());
         
         // Register enemy attributes
         event.put(ModEntities.ZOMBIE_ENEMY.get(), ZombieEnemyEntity.createAttributes().build());

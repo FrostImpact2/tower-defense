@@ -239,6 +239,11 @@ public abstract class BaseEnemyEntity extends PathfinderMob {
 
     @Override
     public void die(DamageSource source) {
+        // Notify the tower that killed this enemy (for Recollection ability)
+        if (source.getEntity() instanceof com.towerdefense.entity.tower.AilyonTowerEntity ailyon) {
+            ailyon.onKillEnemy();
+        }
+        
         // Clear aggro before dying
         clearBlockingTower();
         super.die(source);

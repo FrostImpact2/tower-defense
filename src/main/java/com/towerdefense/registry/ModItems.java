@@ -52,6 +52,19 @@ public class ModItems {
                     )
             ));
 
+    public static final DeferredHolder<Item, Item> AILYON_TOWER_PLACER =
+            ITEMS.register("ailyon_tower_placer", () -> new TowerPlacerItem(
+                    () -> ModEntities.AILYON_TOWER.get(),
+                    "Ailyon, the Skirmisher",
+                    List.of(
+                            Component.literal("§6Role: §fAssassin"),
+                            Component.literal("§7Blink teleport movement"),
+                            Component.literal("§7Spectral charge system"),
+                            Component.literal("§7Attack while moving"),
+                            Component.literal("§7Range: 8 blocks")
+                    )
+            ));
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

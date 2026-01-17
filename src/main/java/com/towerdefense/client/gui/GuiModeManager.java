@@ -1,6 +1,8 @@
 package com.towerdefense.client.gui;
 
 import com.towerdefense.entity.tower.BaseTowerEntity;
+import com.towerdefense.network.ModNetwork;
+import com.towerdefense.network.TowerSelectionPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 
@@ -19,8 +21,16 @@ public class GuiModeManager {
      */
     public static void selectTower(BaseTowerEntity tower) {
         if (tower != null) {
+            // Deselect previous tower if any
+            if (selectedTowerId != -1 && selectedTowerId != tower.getId()) {
+                ModNetwork.sendToServer(new TowerSelectionPacket(selectedTowerId, false));
+            }
+            
             selectedTowerId = tower.getId();
             selectedTower = tower;
+            
+            // Notify server of selection
+            ModNetwork.sendToServer(new TowerSelectionPacket(tower.getId(), true));
         }
     }
 
@@ -35,6 +45,9 @@ public class GuiModeManager {
             Entity entity = mc.level.getEntity(towerId);
             if (entity instanceof BaseTowerEntity tower) {
                 selectedTower = tower;
+                
+                // Notify server of selection
+                ModNetwork.sendToServer(new TowerSelectionPacket(towerId, true));
             }
         }
     }
@@ -59,8 +72,7 @@ public class GuiModeManager {
 
         // Validate tower is still alive
         if (selectedTower != null && !selectedTower.isAlive()) {
-            selectedTower = null;
-            selectedTowerId = -1;
+            clearSelection();
         }
 
         return selectedTower;
@@ -77,6 +89,11 @@ public class GuiModeManager {
      * Clear the selected tower
      */
     public static void clearSelection() {
+        if (selectedTowerId != -1) {
+            // Notify server of deselection
+            ModNetwork.sendToServer(new TowerSelectionPacket(selectedTowerId, false));
+        }
+        
         selectedTowerId = -1;
         selectedTower = null;
     }
