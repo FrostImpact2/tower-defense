@@ -1,6 +1,7 @@
 package com.towerdefense.registry;
 
 import com.towerdefense.TowerDefenseMod;
+import com.towerdefense.entity.tower.AilyonTowerEntity;
 import com.towerdefense.entity.tower.ArcherTowerEntity;
 import com.towerdefense.entity.tower.TankTowerEntity;
 import com.towerdefense.entity.tower.MageTowerEntity;
@@ -34,6 +35,12 @@ public class ModEntities {
                     .sized(0.6F, 1.95F)
                     .clientTrackingRange(10)
                     .build("mage_tower"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<AilyonTowerEntity>> AILYON_TOWER = 
+            ENTITIES.register("ailyon_tower", () -> EntityType.Builder.<AilyonTowerEntity>of(AilyonTowerEntity::new, MobCategory.MISC)
+                    .sized(0.6F, 1.95F)
+                    .clientTrackingRange(10)
+                    .build("ailyon_tower"));
 
     // Enemies
     public static final DeferredHolder<EntityType<?>, EntityType<ZombieEnemyEntity>> ZOMBIE_ENEMY = 

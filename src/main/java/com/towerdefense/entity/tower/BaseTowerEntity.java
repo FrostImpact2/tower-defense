@@ -295,15 +295,29 @@ public abstract class BaseTowerEntity extends PathfinderMob {
 
     /**
      * Start moving to a target block position
+     * Can be overridden by subclasses for custom movement behavior (e.g., Blink)
      */
     public void startMovingTo(BlockPos target) {
         this.moveTarget = target;
         this.isInMoveMode = true;
         entityData.set(IS_MOVING, true);
         
+        // Check if subclass wants to handle movement differently
+        if (handleCustomMovement(target)) {
+            return;
+        }
+        
         // Use pathfinding to navigate - with speed multiplier
         PathNavigation nav = getNavigation();
         nav.moveTo(target.getX() + 0.5, target.getY(), target.getZ() + 0.5, 1.2);
+    }
+    
+    /**
+     * Override this method to implement custom movement behavior
+     * @return true if custom movement was handled, false to use default pathfinding
+     */
+    protected boolean handleCustomMovement(BlockPos target) {
+        return false;
     }
 
     /**

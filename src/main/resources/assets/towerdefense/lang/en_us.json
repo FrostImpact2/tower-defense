@@ -1,7 +1,14 @@
 {
   "entity.towerdefense.archer_tower": "Archer Tower",
+  "entity.towerdefense.tank_tower": "Tank Tower",
+  "entity.towerdefense.mage_tower": "Mage Tower",
+  "entity.towerdefense.ailyon_tower": "Ailyon, the Skirmisher",
   "entity.towerdefense.zombie_enemy": "Zombie Enemy",
   "item.towerdefense.archer_tower_spawner": "Archer Tower Spawner",
+  "item.towerdefense.archer_tower_placer": "Archer Tower Placer",
+  "item.towerdefense.tank_tower_placer": "Tank Tower Placer",
+  "item.towerdefense.mage_tower_placer": "Mage Tower Placer",
+  "item.towerdefense.ailyon_tower_placer": "Ailyon Tower Placer",
   "gui.towerdefense.tower_menu": "Tower Menu",
   "gui.towerdefense.upgrade": "Upgrade",
   "gui.towerdefense.sell": "Sell",
@@ -10,6 +17,8 @@
   "gui.towerdefense.abilities": "Abilities",
   "ability.towerdefense.multi_shot": "Multi-Shot",
   "ability.towerdefense.multi_shot.desc": "Fire multiple arrows at nearby enemies",
+  "ability.towerdefense.blink": "Blink",
+  "ability.towerdefense.blink.desc": "Teleport to destination if within 8 blocks",
   "key.categories.towerdefense": "Tower Defense",
   "key.towerdefense.toggle_gui_mode": "Toggle GUI Control Mode",
   "key.towerdefense.open_side_gui": "Open Side GUI"
