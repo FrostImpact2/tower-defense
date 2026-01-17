@@ -21,7 +21,7 @@ public class BlinkAbility extends AbstractTowerAbility {
     private static final double BLINK_RANGE = 8.0;
     
     public BlinkAbility() {
-        super("blink", "Blink", "Teleport to destination if within 8 blocks", 0);
+        super("blink", "Blink", "Teleport to destination if within " + (int)BLINK_RANGE + " blocks", 0);
     }
     
     @Override

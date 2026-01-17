@@ -38,8 +38,18 @@ import java.util.UUID;
  */
 public class AilyonTowerEntity extends BaseTowerEntity {
 
-    // Custom skull texture for spectral/ethereal appearance
-    private static final String AILYON_SKULL_TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Y3NjU3NzQ4MjM5OTBmNzQ3ZmNhYWE2YWZhZjJmN2QyZDI1ZWMxYTJhYzc0OGE3NWU0ZjNmZGI5YzU3MjYyZiJ9fX0=";
+    // Base stats constants
+    private static final float BASE_DAMAGE = 12.0f;
+    private static final float BASE_RANGE = 8.0f;
+    private static final float BASE_ATTACK_SPEED = 1.2f;
+    private static final float BASE_MAX_HEALTH = 70.0f;
+    private static final int BASE_AGGRO_LIMIT = 1;
+    private static final double BASE_MOVEMENT_SPEED = 0.32D;
+
+    // Custom skull texture for spectral/ethereal appearance (spectral skull from Minecraft texture database)
+    private static final String AILYON_SKULL_TEXTURE = 
+        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Y" +
+        "3NjU3NzQ4MjM5OTBmNzQ3ZmNhYWE2YWZhZjJmN2QyZDI1ZWMxYTJhYzc0OGE3NWU0ZjNmZGI5YzU3MjYyZiJ9fX0=";
     
     // Spectral charge tracking
     private int spectralCharges = 0;
@@ -55,11 +65,11 @@ public class AilyonTowerEntity extends BaseTowerEntity {
     @Override
     protected TowerStats createDefaultStats() {
         return new TowerStats(
-            12.0f,   // damage - high single target damage
-            8.0f,    // range - medium range for assassin playstyle
-            1.2f,    // attacks per second - moderate attack speed
-            70.0f,   // max health - low health, glass cannon
-            1        // aggro limit - assassin focuses on single targets
+            BASE_DAMAGE,        // damage - high single target damage
+            BASE_RANGE,         // range - medium range for assassin playstyle
+            BASE_ATTACK_SPEED,  // attacks per second - moderate attack speed
+            BASE_MAX_HEALTH,    // max health - low health, glass cannon
+            BASE_AGGRO_LIMIT    // aggro limit - assassin focuses on single targets
         );
     }
 
@@ -310,9 +320,9 @@ public class AilyonTowerEntity extends BaseTowerEntity {
 
     public static AttributeSupplier.Builder createAttributes() {
         return BaseTowerEntity.createAttributes()
-                .add(Attributes.MAX_HEALTH, 70.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.32D) // Fast movement speed
-                .add(Attributes.ATTACK_DAMAGE, 12.0D);
+                .add(Attributes.MAX_HEALTH, BASE_MAX_HEALTH)
+                .add(Attributes.MOVEMENT_SPEED, BASE_MOVEMENT_SPEED) // Fast movement speed
+                .add(Attributes.ATTACK_DAMAGE, BASE_DAMAGE);
     }
     
     @Override

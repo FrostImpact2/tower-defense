@@ -49,7 +49,7 @@ public abstract class BaseTowerEntity extends PathfinderMob {
 
     // Synced data
     private static final EntityDataAccessor<Boolean> IS_MOVING = SynchedEntityData.defineId(BaseTowerEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Integer> ATTACK_ANIMATION_TICK = SynchedEntityData.defineId(BaseTowerEntity.class, EntityDataSerializers.INT);
+    protected static final EntityDataAccessor<Integer> ATTACK_ANIMATION_TICK = SynchedEntityData.defineId(BaseTowerEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> IS_SELECTED = SynchedEntityData.defineId(BaseTowerEntity.class, EntityDataSerializers.BOOLEAN);
 
     // Tower state
